@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Oliver Kelly Award</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0a0a0a;
+    --paper: #f5f2ec;
+    --cream: #ede9e0;
+    --red: #c8102e;
+    --mid: #6b6560;
+    --rule: rgba(10,10,10,0.15);
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Barlow', sans-serif;
+    --font-condensed: 'Barlow Condensed', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--ink);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    height: 56px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .nav-wordmark {
+    font-family: var(--font-condensed);
+    font-size: 13px; font-weight: 700; letter-spacing: 0.12em;
+    color: #fff; text-transform: uppercase; text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a {
+    font-family: var(--font-condensed);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.65);
+    text-decoration: none; text-transform: uppercase;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  .nav-links a:hover, .nav-links a.active { color: #fff; }
+  .nav-cta {
+    background: var(--red) !important;
+    color: #fff !important;
+    padding: 8px 18px;
+    font-size: 11px !important;
+    letter-spacing: 0.12em !important;
+    border-radius: 2px;
+  }
+  .nav-cta:hover { background: #a50d26 !important; }
+
+  /* ── PAGES ── */
+  .page { display: none; padding-top: 56px; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ══════════════════════════════════
+     HOME PAGE
+  ══════════════════════════════════ */
+  .hero {
+    background: var(--ink);
+    color: #fff;
+    padding: 100px 40px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: 'OKA';
+    position: absolute; right: -20px; top: 30px;
+    font-family: var(--font-display);
+    font-size: 280px; font-weight: 900; font-style: italic;
+    color: rgba(255,255,255,0.04);
+    letter-spacing: -0.05em;
+    line-height: 1; user-select: none;
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: var(--font-condensed);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--red);
+    margin-bottom: 28px;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(52px, 8vw, 110px);
+    font-weight: 900; font-style: italic;
+    line-height: 0.92; letter-spacing: -0.02em;
+    max-width: 900px;
+    margin-bottom: 36px;
+  }
+  .hero-rule {
+    width: 60px; height: 3px; background: var(--red);
+    margin-bottom: 32px;
+  }
+  .hero-body {
+    font-size: 18px; font-weight: 300; line-height: 1.75;
+    max-width: 560px; color: rgba(255,255,255,0.8);
+    margin-bottom: 48px;
+  }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--red); color: #fff;
+    padding: 16px 36px;
+    font-family: var(--font-condensed);
+    font-size: 13px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: none; cursor: pointer; text-decoration: none;
+    display: inline-block; border-radius: 2px;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: #a50d26; transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent; color: #fff;
+    padding: 15px 36px;
+    font-family: var(--font-condensed);
+    font-size: 13px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.35); cursor: pointer;
+    text-decoration: none; display: inline-block; border-radius: 2px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,0.07); }
+
+  /* home columns */
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-top: 1px solid var(--rule);
+  }
+  .home-col {
+    padding: 56px 40px;
+    border-right: 1px solid var(--rule);
+  }
+  .home-col:last-child { border-right: none; }
+  .col-num {
+    font-family: var(--font-condensed);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    color: var(--red); text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .col-h {
+    font-family: var(--font-display);
+    font-size: 28px; font-weight: 700; font-style: italic;
+    line-height: 1.15; margin-bottom: 16px;
+  }
+  .col-p { font-size: 15px; font-weight: 300; color: #3d3730; line-height: 1.75; }
+
+  /* mission strip */
+  .mission-strip {
+    background: var(--ink); color: #fff;
+    padding: 80px 40px;
+    display: grid; grid-template-columns: 1fr 2fr;
+    gap: 60px; align-items: start;
+  }
+  .mission-label {
+    font-family: var(--font-condensed);
+    font-size: 11px; letter-spacing: 0.16em; font-weight: 700;
+    text-transform: uppercase; color: var(--red);
+    padding-top: 6px;
+  }
+  .mission-body {
+    font-family: var(--font-display);
+    font-size: 28px; font-style: italic; font-weight: 400;
+    line-height: 1.55; color: rgba(255,255,255,0.9);
+  }
+
+  /* rules section */
+  .rules-section { padding: 80px 40px; }
+  .rules-header {
+    display: flex; align-items: baseline; gap: 24px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 20px; margin-bottom: 0;
+  }
+  .rules-title {
+    font-family: var(--font-condensed);
+    font-size: 11px; letter-spacing: 0.16em; font-weight: 700;
+    text-transform: uppercase; color: var(--mid);
+  }
+  .rules-list { list-style: none; }
+  .rules-list li {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 20px; align-items: baseline;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 15px; font-weight: 300;
+    color: #3d3730; line-height: 1.65;
+  }
+  .rules-list li strong {
+    font-family: var(--font-condensed);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    color: var(--red); text-transform: uppercase;
+    align-self: start; padding-top: 3px;
+  }
+
+  /* footer */
+  footer {
+    background: var(--ink); color: rgba(255,255,255,0.45);
+    padding: 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+    font-family: var(--font-condensed);
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  footer .footer-name { color: rgba(255,255,255,0.8); font-weight: 600; }
+
+  /* ══════════════════════════════════
+     SUBMIT PAGE
+  ══════════════════════════════════ */
+  .submit-header {
+    background: var(--ink); color: #fff;
+    padding: 72px 40px 56px;
+    border-bottom: 3px solid var(--red);
+  }
+  .submit-header h2 {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 6vw, 80px); font-weight: 900; font-style: italic;
+    line-height: 0.95; letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .submit-header p {
+    font-size: 16px; font-weight: 300;
+    color: rgba(255,255,255,0.7); max-width: 500px;
+    line-height: 1.7;
+  }
+  .submit-body {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 0;
+    min-height: calc(100vh - 300px);
+  }
+  .submit-form-col {
+    padding: 56px 48px 80px 40px;
+    border-right: 1px solid var(--rule);
+  }
+  .submit-info-col {
+    padding: 56px 40px;
+    background: var(--cream);
+  }
+
+  /* form styles */
+  .form-group { margin-bottom: 28px; }
+  .form-group label {
+    display: block;
+    font-family: var(--font-condensed);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--mid);
+    margin-bottom: 8px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: #fff;
+    border: 1px solid rgba(10,10,10,0.2);
+    color: var(--ink);
+    font-family: var(--font-body); font-size: 15px; font-weight: 400;
+    padding: 13px 16px;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--ink);
+  }
+  .form-group textarea { min-height: 120px; resize: vertical; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  /* file upload */
+  .file-drop {
+    border: 1.5px dashed rgba(10,10,10,0.25);
+    background: #fff;
+    padding: 32px 20px;
+    text-align: center; border-radius: 2px;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .file-drop:hover { border-color: var(--ink); }
+  .file-drop input[type="file"] { display: none; }
+  .file-drop-icon {
+    font-size: 28px; margin-bottom: 10px; opacity: 0.3;
+  }
+  .file-drop p { font-size: 13px; color: var(--mid); }
+  .file-drop .file-name {
+    font-size: 13px; font-weight: 500; color: var(--ink);
+    margin-top: 8px; display: none;
+  }
+
+  /* payment section */
+  .payment-section {
+    margin-top: 40px;
+    border-top: 1px solid var(--rule);
+    padding-top: 36px;
+  }
+  .payment-title {
+    font-family: var(--font-condensed);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--mid);
+    margin-bottom: 20px;
+  }
+  .fee-display {
+    background: var(--ink); color: #fff;
+    padding: 20px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; border-radius: 2px;
+  }
+  .fee-label { font-family: var(--font-condensed); font-size: 13px; font-weight: 400; letter-spacing: 0.08em; }
+  .fee-amount { font-family: var(--font-display); font-size: 32px; font-weight: 700; }
+
+  #card-element {
+    background: #fff;
+    border: 1px solid rgba(10,10,10,0.2);
+    padding: 14px 16px;
+    border-radius: 2px;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+  #card-element.focused { border-color: var(--ink); }
+  #card-errors {
+    color: var(--red); font-size: 13px;
+    min-height: 20px; margin-bottom: 16px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--red); color: #fff;
+    border: none; cursor: pointer;
+    padding: 18px;
+    font-family: var(--font-condensed);
+    font-size: 14px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; border-radius: 2px;
+    transition: background 0.2s, transform 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .submit-btn:hover:not(:disabled) { background: #a50d26; transform: translateY(-1px); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .secure-note {
+    font-size: 11px; color: var(--mid); text-align: center;
+    margin-top: 12px; letter-spacing: 0.04em;
+  }
+
+  /* submit info sidebar */
+  .info-block { margin-bottom: 40px; }
+  .info-block h4 {
+    font-family: var(--font-condensed);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--mid);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .info-block p {
+    font-size: 14px; font-weight: 300; color: #3d3730;
+    line-height: 1.75; margin-bottom: 12px;
+  }
+  .info-block p:last-child { margin-bottom: 0; }
+
+  /* success state */
+  .submit-success {
+    display: none;
+    text-align: center;
+    padding: 80px 40px;
+    background: var(--paper);
+  }
+  .submit-success.visible { display: block; }
+  .success-check {
+    width: 64px; height: 64px;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 28px;
+    font-size: 24px;
+  }
+  .submit-success h3 {
+    font-family: var(--font-display);
+    font-size: 36px; font-style: italic; font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .submit-success p { font-size: 16px; font-weight: 300; color: var(--mid); }
+
+  /* ══════════════════════════════════
+     ARCHIVE PAGE
+  ══════════════════════════════════ */
+  .archive-header {
+    background: var(--ink); color: #fff;
+    padding: 72px 40px 56px;
+  }
+  .archive-header h2 {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 6vw, 80px); font-weight: 900; font-style: italic;
+    line-height: 0.95; letter-spacing: -0.02em; margin-bottom: 20px;
+  }
+  .archive-header p {
+    font-size: 16px; font-weight: 300;
+    color: rgba(255,255,255,0.7); max-width: 500px; line-height: 1.7;
+  }
+  .archive-meta {
+    display: flex; gap: 40px; margin-top: 28px;
+    padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .archive-stat { }
+  .archive-stat-n {
+    font-family: var(--font-display);
+    font-size: 40px; font-weight: 700; color: var(--red);
+    line-height: 1;
+  }
+  .archive-stat-l {
+    font-family: var(--font-condensed);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: rgba(255,255,255,0.45);
+    margin-top: 4px;
+  }
+
+  .archive-coming {
+    padding: 120px 40px;
+    display: flex; flex-direction: column;
+    align-items: center; text-align: center;
+  }
+  .archive-coming-rule {
+    width: 1px; height: 80px; background: var(--rule);
+    margin-bottom: 40px;
+  }
+  .archive-coming h3 {
+    font-family: var(--font-display);
+    font-size: 36px; font-style: italic; font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .archive-coming p {
+    font-size: 16px; font-weight: 300; color: var(--mid);
+    max-width: 440px; line-height: 1.75; margin-bottom: 32px;
+  }
+
+  /* archive plays grid (shown when plays exist) */
+  .archive-grid {
+    padding: 0;
+    display: none; /* shown when plays are added */
+  }
+  .play-card {
+    display: grid; grid-template-columns: 80px 1fr auto;
+    gap: 0; border-bottom: 1px solid var(--rule);
+    padding: 0;
+    align-items: stretch;
+    transition: background 0.15s;
+  }
+  .play-card:hover { background: var(--cream); }
+  .play-card-num {
+    padding: 32px 24px;
+    font-family: var(--font-condensed);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--red); border-right: 1px solid var(--rule);
+    display: flex; align-items: flex-start; justify-content: center;
+  }
+  .play-card-body { padding: 32px 36px; }
+  .play-card-type {
+    font-family: var(--font-condensed);
+    font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--mid);
+    margin-bottom: 8px;
+  }
+  .play-card-title {
+    font-family: var(--font-display);
+    font-size: 24px; font-weight: 700; font-style: italic;
+    line-height: 1.2; margin-bottom: 8px;
+  }
+  .play-card-author {
+    font-family: var(--font-condensed);
+    font-size: 13px; font-weight: 500; letter-spacing: 0.06em;
+    color: var(--mid);
+  }
+  .play-card-year {
+    padding: 32px 36px;
+    display: flex; align-items: flex-start;
+    font-family: var(--font-condensed);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--mid); text-transform: uppercase;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero-trophy { display: none; }
+    .home-grid { grid-template-columns: 1fr; }
+    .home-col { border-right: none; border-bottom: 1px solid var(--rule); }
+    .home-col:last-child { border-bottom: none; }
+    .mission-strip { grid-template-columns: 1fr; gap: 20px; }
+    .submit-body { grid-template-columns: 1fr; }
+    .submit-info-col { border-top: 1px solid var(--rule); }
+    .submit-form-col { border-right: none; }
+    nav { padding: 0 20px; }
+    .hero, .submit-header, .archive-header, .rules-section, .submit-form-col, .submit-info-col, .archive-coming { padding-left: 20px; padding-right: 20px; }
+    .home-col { padding: 40px 20px; }
+    footer { padding: 32px 20px; }
+    .form-row { grid-template-columns: 1fr; gap: 0; }
+    .nav-links .nav-cta { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .nav-links { gap: 16px; }
+    .hero h1 { font-size: 48px; }
+    .archive-meta { gap: 24px; }
+    .play-card { grid-template-columns: 1fr; }
+    .play-card-num { border-right: none; border-bottom: 1px solid var(--rule); padding: 16px 20px; }
+    .play-card-year { padding: 0 20px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div></div>
+  <div class="nav-links">
+    <a onclick="showPage('home')" id="nav-home" class="active">Home</a>
+    <a onclick="showPage('archive')" id="nav-archive">Archive</a>
+    <a onclick="showPage('submit')" id="nav-submit">Submit</a>
+  </div>
+</nav>
+
+<!-- ══ HOME PAGE ══ -->
+<div class="page active" id="page-home">
+
+  <section class="hero">
+    <div class="hero-eyebrow">For Those In Search of Excellence in Theater</div>
+    <h1>The Oliver<br>Kelly Award</h1>
+    <div class="hero-rule"></div>
+    <p class="hero-body">
+      A prize for scripts that jump off the page. From solo shows to short plays — we read everything and pull no punches.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" onclick="showPage('submit')">Submit Your Script</a>
+      <a class="btn-ghost" onclick="showPage('archive')">View the Archive</a>
+    </div>
+  </section>
+
+  <section class="home-grid">
+    <div class="home-col">
+      <div class="col-num">01 &mdash; The Prize</div>
+      <h3 class="col-h">$20 awarded to winning playwrights</h3>
+      <p class="col-p">Winners receive $20 via Venmo or PayPal. We accept scripts on a rolling basis — your play may win months after submission. Winning work is permanently featured in the archive.</p>
+    </div>
+    <div class="home-col">
+      <div class="col-num">02 &mdash; The Selection</div>
+      <h3 class="col-h">Curated, not crowdsourced</h3>
+      <p class="col-p">Every script is read and evaluated by hand. We are not producing these plays — we are spotlighting them. Think of it as a living database of work that actually deserves to be seen.</p>
+    </div>
+    <div class="home-col">
+      <div class="col-num">03 &mdash; Your Rights</div>
+      <h3 class="col-h">Playwrights retain full rights</h3>
+      <p class="col-p">Submitting your work does not transfer any rights. Your script belongs entirely to you. We celebrate it — you own it.</p>
+    </div>
+  </section>
+
+  <section class="mission-strip">
+    <div class="mission-label">Our Mission</div>
+    <p class="mission-body">
+      "The goal is simple: take the time that most institutions won't. Read carefully. Choose boldly. Make excellent theatrical writing impossible to ignore."
+    </p>
+  </section>
+
+  <section class="rules-section">
+    <div class="rules-header">
+      <span class="rules-title">Submission Guidelines</span>
+    </div>
+    <ul class="rules-list">
+      <li><strong>01</strong> Scripts are accepted on a rolling basis. There are no deadlines.</li>
+      <li><strong>02</strong> If your play has not won within six months of submission, you are welcome to submit a new script.</li>
+      <li><strong>03</strong> Winning playwrights must take one month off before submitting again.</li>
+      <li><strong>04</strong> All forms are welcome: solo shows, 10-minute plays, one-acts, full-lengths. <strong>Musicals are not accepted.</strong></li>
+      <li><strong>05</strong> The submission fee is $10, paid by credit card at time of submission.</li>
+      <li><strong>06</strong> Playwrights retain full rights to their work at all times.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <span class="footer-name">The Oliver Kelly Award</span>
+    <span>Celebrating Excellence in Theater &nbsp;&bull;&nbsp; Rolling Submissions</span>
+    <span>&copy; 2026</span>
+  </footer>
+</div>
+
+<!-- ══ SUBMIT PAGE ══ -->
+<div class="page" id="page-submit">
+
+  <div class="submit-header">
+    <div class="hero-eyebrow">Open Submissions</div>
+    <h2>Submit<br>Your Script</h2>
+    <p>Complete the form below and pay the $10 submission fee by credit card. We will be in touch if your work is selected.</p>
+  </div>
+
+  <div class="submit-body">
+    <div class="submit-form-col">
+
+      <!-- SUCCESS STATE -->
+      <div class="submit-success" id="submit-success">
+        <div class="success-check">✓</div>
+        <h3>Submission Received</h3>
+        <p>Thank you for submitting your script. We read every play we receive. We'll be in touch if your work is selected.</p>
+      </div>
+
+      <!-- FORM -->
+      <form id="submission-form" name="script-submission" netlify netlify-honeypot="bot-field" data-netlify="true">
+        <input type="hidden" name="form-name" value="script-submission">
+        <input type="hidden" name="bot-field" style="display:none">
+
+        <h4 style="font-family:var(--font-condensed);font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--mid);margin-bottom:28px;padding-bottom:12px;border-bottom:1px solid var(--rule);">Playwright Information</h4>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name *</label>
+            <input type="text" id="first-name" name="first-name" required placeholder="Jane">
+          </div>
+          <div class="form-group">
+            <label>Last Name *</label>
+            <input type="text" id="last-name" name="last-name" required placeholder="Smith">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" id="email" name="email" required placeholder="jane@email.com">
+        </div>
+
+        <div class="form-group">
+          <label>City / State</label>
+          <input type="text" id="location" name="location" placeholder="New York, NY">
+        </div>
+
+        <h4 style="font-family:var(--font-condensed);font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--mid);margin-bottom:28px;padding-bottom:12px;border-bottom:1px solid var(--rule);margin-top:20px;">Script Information</h4>
+
+        <div class="form-group">
+          <label>Title of Play *</label>
+          <input type="text" id="play-title" name="play-title" required placeholder="Enter play title">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Format *</label>
+            <select id="play-format" name="play-format" required>
+              <option value="">Select format</option>
+              <option>10-Minute Play</option>
+              <option>One-Act</option>
+              <option>Full-Length</option>
+              <option>Solo Show</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Approximate Length</label>
+            <input type="text" id="play-length" name="play-length" placeholder="e.g. 75 minutes / 40 pages">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Brief Synopsis *</label>
+          <textarea id="synopsis" name="synopsis" required placeholder="A short description of your play (3–5 sentences)."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Upload Script (PDF) *</label>
+          <div class="file-drop" onclick="document.getElementById('script-file').click()">
+            <input type="file" id="script-file" name="script" accept=".pdf,.doc,.docx" onchange="handleFile(this)">
+            <div class="file-drop-icon">⊕</div>
+            <p>Click to upload your script<br><span style="font-size:11px;opacity:0.6;">PDF, DOC, or DOCX</span></p>
+            <p class="file-name" id="file-name-display"></p>
+          </div>
+        </div>
+
+        <!-- PAYMENT -->
+        <div class="payment-section">
+          <div class="payment-title">Submission Fee</div>
+          <div class="fee-display">
+            <span class="fee-label">One-time submission fee</span>
+            <span class="fee-amount">$10</span>
+          </div>
+
+          <div class="form-group">
+            <label>Card Details</label>
+            <div id="card-element"></div>
+            <div id="card-errors"></div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submit-btn">
+            <span id="btn-text">Pay $10 &amp; Submit Script</span>
+          </button>
+          <p class="secure-note">🔒 Payments processed securely via Stripe. Your card is never stored.</p>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="submit-info-col">
+      <div class="info-block">
+        <h4>What to Expect</h4>
+        <p>Scripts are accepted on a rolling basis. There are no cycles or deadlines — submit when you're ready.</p>
+        <p>We read every play. If your work is selected, we will reach out to the email address provided. The review process can take several months.</p>
+        <p>If you have not heard from us within six months, your play was not selected for this cycle, and you are welcome to submit a new script.</p>
+      </div>
+
+      <div class="info-block">
+        <h4>What We Accept</h4>
+        <p>All formats are welcome: solo shows, 10-minute plays, one-acts, and full-lengths. We are looking for excellence in writing — not production-readiness.</p>
+        <p><strong>Musicals are not accepted.</strong></p>
+      </div>
+
+      <div class="info-block">
+        <h4>Your Rights</h4>
+        <p>Submitting your script does not transfer any rights to The Oliver Kelly Award. You retain full ownership of your work. If selected, we feature your play in our archive with your name and attribution.</p>
+      </div>
+
+      <div class="info-block">
+        <h4>The Prize</h4>
+        <p>Winning playwrights receive $20 via Venmo or PayPal. We'll be in touch with the winner directly to arrange payment.</p>
+        <p>Winning playwrights may submit again after one month from the date their play was selected.</p>
+      </div>
+
+      <div class="info-block">
+        <h4>The Submission Fee</h4>
+        <p>The $10 fee helps sustain the award and fund prizes. It is non-refundable. Payments are processed securely by Stripe.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span class="footer-name">The Oliver Kelly Award</span>
+    <span>Questions? Reach out via the submission email</span>
+    <span>&copy; 2026</span>
+  </footer>
+</div>
+
+<!-- ══ ARCHIVE PAGE ══ -->
+<div class="page" id="page-archive">
+
+  <div class="archive-header">
+    <div class="hero-eyebrow">The Archive</div>
+    <h2>Winning<br>Plays</h2>
+    <p>A permanent record of outstanding theatrical writing. Each script chosen for its excellence on the page.</p>
+    <div class="archive-meta">
+      <div class="archive-stat">
+        <div class="archive-stat-n">0</div>
+        <div class="archive-stat-l">Plays Selected</div>
+      </div>
+      <div class="archive-stat">
+        <div class="archive-stat-n">—</div>
+        <div class="archive-stat-l">Formats</div>
+      </div>
+      <div class="archive-stat">
+        <div class="archive-stat-n">—</div>
+        <div class="archive-stat-l">Playwrights</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="archive-coming">
+    <div class="archive-coming-rule"></div>
+    <h3>The Archive is Empty — For Now</h3>
+    <p>The Oliver Kelly Award is actively reviewing submissions. The first winning plays will be announced here. Check back soon, or submit your own work.</p>
+    <a class="btn-primary" onclick="showPage('submit')">Submit a Play</a>
+  </div>
+
+  <!-- When plays exist, populate .archive-grid and show it -->
+  <div class="archive-grid">
+    <!-- Example card structure:
+    <div class="play-card">
+      <div class="play-card-num">001</div>
+      <div class="play-card-body">
+        <div class="play-card-type">Solo Show &bull; 60 min</div>
+        <div class="play-card-title">Title of the Play</div>
+        <div class="play-card-author">By Playwright Name</div>
+      </div>
+      <div class="play-card-year">2025</div>
+    </div>
+    -->
+  </div>
+
+  <footer>
+    <span class="footer-name">The Oliver Kelly Award</span>
+    <span>Celebrating Excellence in Theater &nbsp;&bull;&nbsp; Rolling Submissions</span>
+    <span>&copy; 2026</span>
+  </footer>
+</div>
+
+<script>
+// ── PAGE NAVIGATION ──
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── FILE UPLOAD ──
+function handleFile(input) {
+  const display = document.getElementById('file-name-display');
+  if (input.files && input.files[0]) {
+    display.textContent = '✓ ' + input.files[0].name;
+    display.style.display = 'block';
+  }
+}
+
+// ── STRIPE SETUP ──
+// NOTE: Replace with your Stripe LIVE publishable key (pk_live_...) before publishing
+const STRIPE_KEY = 'pk_live_51TFgqN8x797bGqnu8ZKiJlH7XXfRGVbiEqp4b01z0zpxkpoTWQHNHmcs8mdBf763gHnvJVDR8zVqejWDnxRNr4pn00YKs4qE1g';
+
+let stripe, card;
+
+function initStripe() {
+  try {
+    stripe = Stripe(STRIPE_KEY);
+    const elements = stripe.elements({
+      fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Barlow:wght@400&display=swap' }]
+    });
+    card = elements.create('card', {
+      style: {
+        base: {
+          fontFamily: '"Barlow", sans-serif',
+          fontSize: '15px',
+          color: '#0a0a0a',
+          '::placeholder': { color: '#b0a89e' }
+        },
+        invalid: { color: '#c8102e' }
+      }
+    });
+    card.mount('#card-element');
+    card.on('focus', () => document.getElementById('card-element').classList.add('focused'));
+    card.on('blur',  () => document.getElementById('card-element').classList.remove('focused'));
+    card.on('change', e => {
+      document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
+    });
+  } catch(e) {
+    document.getElementById('card-element').innerHTML = '<p style="font-size:13px;color:var(--mid);padding:10px 0;">Payment form unavailable in preview mode. Add your Stripe key to enable.</p>';
+  }
+}
+
+initStripe();
+
+// ── FORM SUBMIT ──
+document.getElementById('submission-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const btn = document.getElementById('submit-btn');
+  const btnText = document.getElementById('btn-text');
+
+  // Basic validation
+  const required = ['first-name', 'last-name', 'email', 'play-title', 'play-format', 'synopsis'];
+  let valid = true;
+  required.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) {
+      el.style.borderColor = 'var(--red)';
+      valid = false;
+    } else {
+      el.style.borderColor = '';
+    }
+  });
+  if (!valid) {
+    document.getElementById('card-errors').textContent = 'Please fill in all required fields.';
+    return;
+  }
+
+  if (!stripe || !card) {
+    document.getElementById('card-errors').textContent = 'Payment not configured. Please add your Stripe key.';
+    return;
+  }
+
+  btn.disabled = true;
+  btnText.textContent = 'Processing...';
+
+  try {
+    // Create payment method
+    const { paymentMethod, error } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: card,
+      billing_details: {
+        name: document.getElementById('first-name').value + ' ' + document.getElementById('last-name').value,
+        email: document.getElementById('email').value,
+      }
+    });
+
+    if (error) {
+      document.getElementById('card-errors').textContent = error.message;
+      btn.disabled = false;
+      btnText.textContent = 'Pay $10 & Submit Script';
+      return;
+    }
+
+    // Send to Netlify function to complete the charge
+    const name = document.getElementById('first-name').value + ' ' + document.getElementById('last-name').value;
+    const email = document.getElementById('email').value;
+
+    const response = await fetch('/.netlify/functions/create-payment-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentMethodId: paymentMethod.id, name, email }),
+    });
+
+    const result = await response.json();
+
+    if (result.error) {
+      document.getElementById('card-errors').textContent = result.error;
+      btn.disabled = false;
+      btnText.textContent = 'Pay $10 & Submit Script';
+      return;
+    }
+
+    // Submit form data to Netlify
+    const formData = new FormData();
+    formData.append('form-name', 'script-submission');
+    formData.append('first-name', document.getElementById('first-name').value);
+    formData.append('last-name', document.getElementById('last-name').value);
+    formData.append('email', document.getElementById('email').value);
+    formData.append('location', document.getElementById('location').value);
+    formData.append('play-title', document.getElementById('play-title').value);
+    formData.append('play-format', document.getElementById('play-format').value);
+    formData.append('play-length', document.getElementById('play-length').value);
+    formData.append('synopsis', document.getElementById('synopsis').value);
+    const scriptFile = document.getElementById('script-file').files[0];
+    if (scriptFile) formData.append('script', scriptFile);
+
+    await fetch('/', { method: 'POST', body: formData });
+
+    // Show success
+    document.getElementById('submission-form').style.display = 'none';
+    document.getElementById('submit-success').classList.add('visible');
+
+  } catch(err) {
+    document.getElementById('card-errors').textContent = 'Something went wrong. Please try again.';
+    btn.disabled = false;
+    btnText.textContent = 'Pay $10 & Submit Script';
+  }
+});
+</script>
+</body>
+</html>
