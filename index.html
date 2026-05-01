@@ -449,16 +449,12 @@
     max-width: 440px; line-height: 1.75; margin-bottom: 32px;
   }
 
-  /* archive plays grid (shown when plays exist) */
-  .archive-grid {
-    padding: 0;
-    display: none; /* shown when plays are added */
-  }
+  /* archive plays grid */
+  .archive-grid { padding: 0; }
   .play-card {
     display: grid; grid-template-columns: 80px 1fr auto;
     gap: 0; border-bottom: 1px solid var(--rule);
-    padding: 0;
-    align-items: stretch;
+    padding: 0; align-items: stretch;
     transition: background 0.15s;
   }
   .play-card:hover { background: var(--cream); }
@@ -510,6 +506,8 @@
     footer { padding: 32px 20px; }
     .form-row { grid-template-columns: 1fr; gap: 0; }
     .nav-links .nav-cta { display: none; }
+    .winner-grid { grid-template-columns: 1fr !important; }
+    .winner-photo { width: 140px !important; height: 140px !important; }
   }
 
   @media (max-width: 600px) {
@@ -568,6 +566,23 @@
     </div>
   </section>
 
+  <!-- CURRENT WINNER -->
+  <section style="padding:80px 40px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);">
+    <div style="font-family:var(--font-condensed);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--red);margin-bottom:32px;">Current Winner</div>
+    <div class="winner-grid" style="display:grid;grid-template-columns:180px 1fr;gap:48px;align-items:start;max-width:800px;">
+      <div style="text-align:center;">
+        <img src="IMG_4967.jpeg" alt="Franky D. Gonzalez" class="winner-photo" style="width:180px;height:180px;object-fit:cover;object-position:top;border-radius:2px;display:block;margin-bottom:14px;">
+        <div style="font-family:var(--font-condensed);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Franky D. Gonzalez</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-condensed);font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);margin-bottom:10px;">April 2026</div>
+        <div style="font-family:var(--font-display);font-size:36px;font-weight:700;font-style:italic;line-height:1.1;margin-bottom:16px;">Escobar's Hippo</div>
+        <p style="font-size:15px;font-weight:300;color:#3d3730;line-height:1.75;margin-bottom:24px;">A rampaging hippopotamus descended from Pablo Escobar's private collection arrives in a Colombian town — and nothing will ever be the same. Part political satire, part absurdist comedy, all chaos.</p>
+        <a href="escobars-hippo.pdf" target="_blank" style="font-family:var(--font-condensed);font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);text-decoration:none;border-bottom:1px solid var(--red);padding-bottom:2px;">Read It Here</a>
+      </div>
+    </div>
+  </section>
+
   <section class="mission-strip">
     <div class="mission-label">Our Mission</div>
     <p class="mission-body">
@@ -608,14 +623,12 @@
   <div class="submit-body">
     <div class="submit-form-col">
 
-      <!-- SUCCESS STATE -->
       <div class="submit-success" id="submit-success">
-        <div class="success-check">✓</div>
+        <div class="success-check">&#10003;</div>
         <h3>Submission Received</h3>
         <p>Thank you for submitting your script. We read every play we receive. We'll be in touch if your work is selected.</p>
       </div>
 
-      <!-- FORM -->
       <form id="submission-form" name="script-submission" netlify netlify-honeypot="bot-field" data-netlify="true">
         <input type="hidden" name="form-name" value="script-submission">
         <input type="hidden" name="bot-field" style="display:none">
@@ -677,13 +690,12 @@
           <label>Upload Script (PDF) *</label>
           <div class="file-drop" onclick="document.getElementById('script-file').click()">
             <input type="file" id="script-file" name="script" accept=".pdf,.doc,.docx" onchange="handleFile(this)">
-            <div class="file-drop-icon">⊕</div>
+            <div class="file-drop-icon">&#8853;</div>
             <p>Click to upload your script<br><span style="font-size:11px;opacity:0.6;">PDF, DOC, or DOCX</span></p>
             <p class="file-name" id="file-name-display"></p>
           </div>
         </div>
 
-        <!-- PAYMENT -->
         <div class="payment-section">
           <div class="payment-title">Submission Fee</div>
           <div class="fee-display">
@@ -700,7 +712,7 @@
           <button type="submit" class="submit-btn" id="submit-btn">
             <span id="btn-text">Pay $10 &amp; Submit Script</span>
           </button>
-          <p class="secure-note">🔒 Payments processed securely via Stripe. Your card is never stored.</p>
+          <p class="secure-note">&#128274; Payments processed securely via Stripe. Your card is never stored.</p>
         </div>
 
       </form>
@@ -754,40 +766,33 @@
     <p>A permanent record of outstanding theatrical writing. Each script chosen for its excellence on the page.</p>
     <div class="archive-meta">
       <div class="archive-stat">
-        <div class="archive-stat-n">0</div>
+        <div class="archive-stat-n">1</div>
         <div class="archive-stat-l">Plays Selected</div>
       </div>
       <div class="archive-stat">
-        <div class="archive-stat-n">—</div>
+        <div class="archive-stat-n">1</div>
         <div class="archive-stat-l">Formats</div>
       </div>
       <div class="archive-stat">
-        <div class="archive-stat-n">—</div>
+        <div class="archive-stat-n">1</div>
         <div class="archive-stat-l">Playwrights</div>
       </div>
     </div>
   </div>
 
-  <div class="archive-coming">
-    <div class="archive-coming-rule"></div>
-    <h3>The Archive is Empty — For Now</h3>
-    <p>The Oliver Kelly Award is actively reviewing submissions. The first winning plays will be announced here. Check back soon, or submit your own work.</p>
-    <a class="btn-primary" onclick="showPage('submit')">Submit a Play</a>
-  </div>
-
-  <!-- When plays exist, populate .archive-grid and show it -->
   <div class="archive-grid">
-    <!-- Example card structure:
     <div class="play-card">
       <div class="play-card-num">001</div>
       <div class="play-card-body">
-        <div class="play-card-type">Solo Show &bull; 60 min</div>
-        <div class="play-card-title">Title of the Play</div>
-        <div class="play-card-author">By Playwright Name</div>
+        <div class="play-card-type">Full-Length</div>
+        <div class="play-card-title">Escobar's Hippo</div>
+        <div class="play-card-author">By Franky D. Gonzalez</div>
+        <div style="margin-top:14px;">
+          <a href="escobars-hippo.pdf" target="_blank" style="font-family:var(--font-condensed);font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);text-decoration:none;border-bottom:1px solid var(--red);padding-bottom:2px;">Download Script (PDF)</a>
+        </div>
       </div>
-      <div class="play-card-year">2025</div>
+      <div class="play-card-year">April 2026</div>
     </div>
-    -->
   </div>
 
   <footer>
@@ -798,7 +803,6 @@
 </div>
 
 <script>
-// ── PAGE NAVIGATION ──
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
@@ -807,7 +811,6 @@ function showPage(id) {
   window.scrollTo(0, 0);
 }
 
-// ── FILE UPLOAD ──
 function handleFile(input) {
   const display = document.getElementById('file-name-display');
   if (input.files && input.files[0]) {
@@ -816,8 +819,6 @@ function handleFile(input) {
   }
 }
 
-// ── STRIPE SETUP ──
-// NOTE: Replace with your Stripe LIVE publishable key (pk_live_...) before publishing
 const STRIPE_KEY = 'pk_live_51TFgqN8x797bGqnu8ZKiJlH7XXfRGVbiEqp4b01z0zpxkpoTWQHNHmcs8mdBf763gHnvJVDR8zVqejWDnxRNr4pn00YKs4qE1g';
 
 let stripe, card;
@@ -846,20 +847,18 @@ function initStripe() {
       document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
     });
   } catch(e) {
-    document.getElementById('card-element').innerHTML = '<p style="font-size:13px;color:var(--mid);padding:10px 0;">Payment form unavailable in preview mode. Add your Stripe key to enable.</p>';
+    document.getElementById('card-element').innerHTML = '<p style="font-size:13px;color:var(--mid);padding:10px 0;">Payment form unavailable in preview mode.</p>';
   }
 }
 
 initStripe();
 
-// ── FORM SUBMIT ──
 document.getElementById('submission-form').addEventListener('submit', async function(e) {
   e.preventDefault();
 
   const btn = document.getElementById('submit-btn');
   const btnText = document.getElementById('btn-text');
 
-  // Basic validation
   const required = ['first-name', 'last-name', 'email', 'play-title', 'play-format', 'synopsis'];
   let valid = true;
   required.forEach(id => {
@@ -885,7 +884,6 @@ document.getElementById('submission-form').addEventListener('submit', async func
   btnText.textContent = 'Processing...';
 
   try {
-    // Create payment method
     const { paymentMethod, error } = await stripe.createPaymentMethod({
       type: 'card',
       card: card,
@@ -902,7 +900,6 @@ document.getElementById('submission-form').addEventListener('submit', async func
       return;
     }
 
-    // Send to Netlify function to complete the charge
     const name = document.getElementById('first-name').value + ' ' + document.getElementById('last-name').value;
     const email = document.getElementById('email').value;
 
@@ -921,7 +918,6 @@ document.getElementById('submission-form').addEventListener('submit', async func
       return;
     }
 
-    // Submit form data to Netlify
     const formData = new FormData();
     formData.append('form-name', 'script-submission');
     formData.append('first-name', document.getElementById('first-name').value);
@@ -937,7 +933,6 @@ document.getElementById('submission-form').addEventListener('submit', async func
 
     await fetch('/', { method: 'POST', body: formData });
 
-    // Show success
     document.getElementById('submission-form').style.display = 'none';
     document.getElementById('submit-success').classList.add('visible');
 
